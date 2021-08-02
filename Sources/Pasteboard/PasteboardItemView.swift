@@ -14,6 +14,8 @@ class PasteboardItemView: NSView {
     
     var item: PasteboardItem
     
+    private var isDragging = false
+    
     init(item: PasteboardItem) {
         self.item = item
         super.init(frame: .zero)
@@ -84,21 +86,32 @@ class PasteboardItemView: NSView {
     }
     
     override func mouseDown(with event: NSEvent) {
-        print("DOWN")
         layer?.backgroundColor = NSColor.placeholderTextColor.cgColor
-        let pasteboardItem = NSPasteboardItem()
-        let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
-        
-        switch item {
-        case .string(let string, _):
-            pasteboardItem.setDataProvider(self, forTypes: [.string])
-            draggingItem.setDraggingFrame(self.bounds, contents: string)
+        isDragging = false
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        layer?.backgroundColor = NSColor.separatorColor.cgColor
+        isDragging = false
+    }
+    
+    override func mouseDragged(with event: NSEvent) {
+        if !isDragging {
+            isDragging = true
+            let pasteboardItem = NSPasteboardItem()
+            let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
+            
+            switch item {
+            case .string:
+                pasteboardItem.setDataProvider(self, forTypes: [.string])
+                draggingItem.setDraggingFrame(self.bounds, contents: nil)
 
-        case .image:
-            pasteboardItem.setDataProvider(self, forTypes: [.png])
-            draggingItem.setDraggingFrame(self.bounds, contents: nil)
+            case .image(let image, _):
+                pasteboardItem.setDataProvider(self, forTypes: [.png])
+                draggingItem.setDraggingFrame(self.bounds, contents: image)
+            }
+            beginDraggingSession(with: [draggingItem], event: event, source: self)
         }
-        beginDraggingSession(with: [draggingItem], event: event, source: self)
     }
     
     @objc func copyItem() {
@@ -112,7 +125,7 @@ extension PasteboardItemView: NSDraggingSource, NSPasteboardItemDataProvider {
     }
     
     func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-        layer?.backgroundColor = NSColor.separatorColor.cgColor
+//        layer?.backgroundColor = NSColor.separatorColor.cgColor
     }
     
     func pasteboard(_ pasteboard: NSPasteboard?, item: NSPasteboardItem, provideDataForType type: NSPasteboard.PasteboardType) {
