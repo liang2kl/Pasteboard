@@ -8,55 +8,59 @@
 import Cocoa
 import Combine
 import SwiftUI
+import Defaults
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    var observer = PasteboardObserver()
+    var observer = PasteboardManager.shared
+    var items = [PasteboardItem]()
     var cancellables = Set<AnyCancellable>()
     
     var statusItem: NSStatusItem!
 
     @IBOutlet weak var menu: NSMenu!
-
+    @IBAction func openPreferences(_ sender: NSMenuItem) {
+        let vc = NSHostingController(rootView: SettingsView())
+        let window = NSWindow(contentViewController: vc)
+        window.title = "Preferences"
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+    }
+    
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.button?.image = NSImage(systemSymbolName: "p.circle.fill", accessibilityDescription: nil)
         statusItem.menu = menu
+        menu.delegate = self
         
         observer.startObserving()
         
-        observer.$pasteboardItems
-            .sink { items in print(items.count) }
-            .store(in: &cancellables)
+        if Defaults[.storingHistory] {
+            observer.pasteboardItems = Defaults[.storedItems]
+        }
         
-        observer.$latestItem
-            .sink {
-                guard let latestItem = $0 else { return }
-                self.updateMenu(with: latestItem)
+        observer.$pasteboardItems
+            .receive(on: DispatchQueue.global(qos: .background))
+            .sink { items in
+                guard Defaults[.storingHistory] else {
+                    Defaults[.storedItems] = []
+                    return
+                }
+                
+                Defaults[.storedItems] = items
             }
             .store(in: &cancellables)
-    }
-    
-    func updateMenu(with item: PasteboardItem) {
-        menu.insertItem(menuItem(for: item), at: 3)
-        menu.insertItem(.separator(), at: 3)
+        
     }
     
     func menuItem(for item: PasteboardItem) -> NSMenuItem {
         let menu = NSMenuItem()
-        menu.action = #selector(onStringMenuClick(_:))
-        
         menu.view = PasteboardItemView(item: item)
-//        menu.view!.frame.size = .init(width: 400, height: 200)
         return menu
     }
     
-    @objc func onStringMenuClick(_ sender: NSMenuItem) {
-        if let pasteboardItemView = sender.view as? PasteboardItemView {
-            print(pasteboardItemView.item)
-            pasteboardItemView.item.copyToPasteboard()
-        }
+    @objc func onClick(_ sender: NSMenuItem) {
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -67,4 +71,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+}
+
+extension AppDelegate: NSMenuDelegate {
+    func menuDidClose(_ menu: NSMenu) {
+        while menu.items.count > 5 {
+            menu.removeItem(at: 3)
+        }
+    }
+    
+    func menuWillOpen(_ menu: NSMenu) {
+        if observer.pasteboardItems.isEmpty {
+            let item = NSMenuItem()
+            item.title = "No Copied Content"
+            menu.insertItem(item, at: 3)
+            menu.insertItem(.separator(), at: 3)
+        } else {
+            for item in observer.pasteboardItems.reversed() {
+                menu.insertItem(menuItem(for: item), at: 3)
+                menu.insertItem(.separator(), at: 3)
+            }
+        }
+    }
 }

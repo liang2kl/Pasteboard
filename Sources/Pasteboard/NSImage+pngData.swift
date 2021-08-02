@@ -1,5 +1,5 @@
 //
-//  NSView+pngData.swift
+//  NSImage+pngData.swift
 //  Pasteboard
 //
 //  Created by liang2kl on 2021/8/2.
