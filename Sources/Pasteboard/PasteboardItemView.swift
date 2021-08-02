@@ -31,10 +31,10 @@ class PasteboardItemView: NSView {
             textField.isSelectable = false
             textField.maximumNumberOfLines = 10
             textField.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
-//            textField.lineBreakMode = .byCharWrapping
             contentView = textField
         case .image(let image, _):
-            let imageView = NSImageView(image: image)
+            let imageView = CustomNSImageView(mouseUp: mouseUp, mouseDown: mouseDown)
+            imageView.image = image
             contentView = imageView
         }
         
@@ -84,6 +84,7 @@ class PasteboardItemView: NSView {
     }
     
     override func mouseDown(with event: NSEvent) {
+        print("DOWN")
         layer?.backgroundColor = NSColor.placeholderTextColor.cgColor
         let pasteboardItem = NSPasteboardItem()
         let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
@@ -120,5 +121,32 @@ extension PasteboardItemView: NSDraggingSource, NSPasteboardItemDataProvider {
         }
 
         self.item.copyToPasteboard(pasteboard)
+    }
+}
+
+private class CustomNSImageView: NSImageView {
+    var mouseUp: (NSEvent) -> Void
+    var mouseDown: (NSEvent) -> Void
+    
+    init(mouseUp: @escaping (NSEvent) -> Void, mouseDown: @escaping (NSEvent) -> Void) {
+        self.mouseUp = mouseUp
+        self.mouseDown = mouseDown
+        super.init(frame: .zero)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func mouseUp(with event: NSEvent) {
+        mouseUp(event)
+    }
+    
+    override func mouseDown(with event: NSEvent) {
+        mouseDown(event)
+    }
+    
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        return true
     }
 }
