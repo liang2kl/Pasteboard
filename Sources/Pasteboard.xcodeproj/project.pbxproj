@@ -335,7 +335,7 @@
 				INFOPLIST_KEY_CFBundleExecutable = Pasteboard;
 				INFOPLIST_KEY_CFBundleName = Pasteboard;
 				INFOPLIST_KEY_CFBundleVersion = 1;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "©2021 Liang Yesheng";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Liang Yesheng";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -368,7 +368,7 @@
 				INFOPLIST_KEY_CFBundleExecutable = Pasteboard;
 				INFOPLIST_KEY_CFBundleName = Pasteboard;
 				INFOPLIST_KEY_CFBundleVersion = 1;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "©2021 Liang Yesheng";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Liang Yesheng";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
