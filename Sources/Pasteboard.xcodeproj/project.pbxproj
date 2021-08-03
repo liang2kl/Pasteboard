@@ -12,7 +12,6 @@
 		0EC301E026B939EC0082C74D /* NSImage+downsampledImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC301DF26B939EC0082C74D /* NSImage+downsampledImage.swift */; };
 		0EC301E226B93AC40082C74D /* FileManager+Cache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EC301E126B93AC40082C74D /* FileManager+Cache.swift */; };
 		0EC301E526B962F50082C74D /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 0EC301E426B962F50082C74D /* HotKey */; };
-		0EC301E926B96FE10082C74D /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 0EC301E826B96FE10082C74D /* Sparkle */; };
 		0ED3530926B7C62D0020933D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED3530826B7C62D0020933D /* AppDelegate.swift */; };
 		0ED3530D26B7C62E0020933D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0ED3530C26B7C62E0020933D /* Assets.xcassets */; };
 		0ED3531026B7C62E0020933D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0ED3530E26B7C62E0020933D /* Main.storyboard */; };
@@ -29,7 +28,6 @@
 		0EABF7C826B84F6C00707F73 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0EC301DF26B939EC0082C74D /* NSImage+downsampledImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+downsampledImage.swift"; sourceTree = "<group>"; };
 		0EC301E126B93AC40082C74D /* FileManager+Cache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileManager+Cache.swift"; sourceTree = "<group>"; };
-		0EC301EC26B97D640082C74D /* Pasteboard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pasteboard.entitlements; sourceTree = "<group>"; };
 		0ED3530526B7C62D0020933D /* Pasteboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pasteboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0ED3530826B7C62D0020933D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0ED3530C26B7C62E0020933D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -47,7 +45,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0EC301E526B962F50082C74D /* HotKey in Frameworks */,
-				0EC301E926B96FE10082C74D /* Sparkle in Frameworks */,
 				0EF23F0926B858790070515B /* LaunchAtLogin in Frameworks */,
 				0EF23F0426B853310070515B /* Defaults in Frameworks */,
 			);
@@ -85,7 +82,6 @@
 		0ED3530726B7C62D0020933D /* Pasteboard */ = {
 			isa = PBXGroup;
 			children = (
-				0EC301EC26B97D640082C74D /* Pasteboard.entitlements */,
 				0EC301E626B966D20082C74D /* Utilities */,
 				0ED3531826B7C9960020933D /* PasteboardManager.swift */,
 				0ED3531F26B7D8A70020933D /* PasteboardItemView.swift */,
@@ -121,7 +117,6 @@
 				0EF23F0326B853310070515B /* Defaults */,
 				0EF23F0826B858790070515B /* LaunchAtLogin */,
 				0EC301E426B962F50082C74D /* HotKey */,
-				0EC301E826B96FE10082C74D /* Sparkle */,
 			);
 			productName = Pasteboard;
 			productReference = 0ED3530526B7C62D0020933D /* Pasteboard.app */;
@@ -155,7 +150,6 @@
 				0EF23F0226B853310070515B /* XCRemoteSwiftPackageReference "Defaults" */,
 				0EF23F0726B858790070515B /* XCRemoteSwiftPackageReference "LaunchAtLogin" */,
 				0EC301E326B962F50082C74D /* XCRemoteSwiftPackageReference "HotKey" */,
-				0EC301E726B96FE10082C74D /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = 0ED3530626B7C62D0020933D /* Products */;
 			projectDirPath = "";
@@ -349,7 +343,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Pasteboard/Pasteboard.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -361,7 +354,7 @@
 				INFOPLIST_FILE = Pasteboard/Info.plist;
 				INFOPLIST_KEY_CFBundleExecutable = Pasteboard;
 				INFOPLIST_KEY_CFBundleName = Pasteboard;
-				INFOPLIST_KEY_CFBundleVersion = 3;
+				INFOPLIST_KEY_CFBundleVersion = 1;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Liang Yesheng";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -370,7 +363,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.1.2;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.liang2kl.Pasteboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -383,7 +376,6 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Pasteboard/Pasteboard.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -395,7 +387,7 @@
 				INFOPLIST_FILE = Pasteboard/Info.plist;
 				INFOPLIST_KEY_CFBundleExecutable = Pasteboard;
 				INFOPLIST_KEY_CFBundleName = Pasteboard;
-				INFOPLIST_KEY_CFBundleVersion = 3;
+				INFOPLIST_KEY_CFBundleVersion = 1;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Liang Yesheng";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -404,7 +396,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
-				MARKETING_VERSION = 0.1.2;
+				MARKETING_VERSION = 0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.liang2kl.Pasteboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -444,14 +436,6 @@
 				minimumVersion = 0.1.3;
 			};
 		};
-		0EC301E726B96FE10082C74D /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		0EF23F0226B853310070515B /* XCRemoteSwiftPackageReference "Defaults" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sindresorhus/Defaults.git";
@@ -475,11 +459,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0EC301E326B962F50082C74D /* XCRemoteSwiftPackageReference "HotKey" */;
 			productName = HotKey;
-		};
-		0EC301E826B96FE10082C74D /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0EC301E726B96FE10082C74D /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
 		};
 		0EF23F0326B853310070515B /* Defaults */ = {
 			isa = XCSwiftPackageProductDependency;

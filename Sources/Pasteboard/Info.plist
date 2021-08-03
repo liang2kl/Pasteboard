@@ -4,7 +4,5 @@
 <dict>
 	<key>LSUIElement</key>
 	<true/>
-	<key>SUFeedURL</key>
-	<string>https://cdn.jsdelivr.net/gh/liang2kl/Pasteboard-releases@main/appcast.xml</string>
 </dict>
 </plist>
