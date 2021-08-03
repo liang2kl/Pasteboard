@@ -32,7 +32,8 @@ struct SettingsView: View {
             }
             .tabItem { Text("History") }
         }
-        .frame(minWidth: 400, minHeight: 400)
+        .frame(minWidth: 400, maxWidth: 600, minHeight: 250, maxHeight: 450)
         .padding()
+        .font(.system(.body, design: .monospaced))
     }
 }

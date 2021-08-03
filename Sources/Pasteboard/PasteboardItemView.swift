@@ -93,6 +93,7 @@ class PasteboardItemView: NSView {
     override func mouseUp(with event: NSEvent) {
         layer?.backgroundColor = NSColor.separatorColor.cgColor
         isDragging = false
+        copyItem()
     }
     
     override func mouseDragged(with event: NSEvent) {
@@ -112,6 +113,10 @@ class PasteboardItemView: NSView {
             }
             beginDraggingSession(with: [draggingItem], event: event, source: self)
         }
+    }
+    
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        return true
     }
     
     @objc func copyItem() {

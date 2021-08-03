@@ -13,19 +13,27 @@ import Defaults
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-    var observer = PasteboardManager.shared
-    var items = [PasteboardItem]()
+    var manager = PasteboardManager.shared
     var cancellables = Set<AnyCancellable>()
     
     var statusItem: NSStatusItem!
 
     @IBOutlet weak var menu: NSMenu!
+    
     @IBAction func openPreferences(_ sender: NSMenuItem) {
         let vc = NSHostingController(rootView: SettingsView())
         let window = NSWindow(contentViewController: vc)
         window.title = "Preferences"
         NSApp.activate(ignoringOtherApps: true)
         window.makeKeyAndOrderFront(nil)
+    }
+
+    @IBAction func clearHistories(_ sender: NSMenuItem) {
+        manager.pasteboardItems.removeAll()
+    }
+    @IBAction func showAboutView(_ sender: NSMenuItem) {
+        NSApp.activate(ignoringOtherApps: true)
+        NSApp.orderFrontStandardAboutPanel(nil)
     }
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
@@ -34,13 +42,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.menu = menu
         menu.delegate = self
         
-        observer.startObserving()
+        manager.startObserving()
         
         if Defaults[.storingHistory] {
-            observer.pasteboardItems = Defaults[.storedItems]
+            manager.pasteboardItems = Defaults[.storedItems]
         }
         
-        observer.$pasteboardItems
+        manager.$pasteboardItems
             .receive(on: DispatchQueue.global(qos: .background))
             .sink { items in
                 guard Defaults[.storingHistory] else {
@@ -75,21 +83,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: NSMenuDelegate {
     func menuDidClose(_ menu: NSMenu) {
-        while menu.items.count > 5 {
-            menu.removeItem(at: 3)
+        while menu.items.count > 7 {
+            menu.removeItem(at: 5)
         }
     }
     
     func menuWillOpen(_ menu: NSMenu) {
-        if observer.pasteboardItems.isEmpty {
+        if manager.pasteboardItems.isEmpty {
             let item = NSMenuItem()
             item.title = "No Copied Content"
-            menu.insertItem(item, at: 3)
-            menu.insertItem(.separator(), at: 3)
+            menu.insertItem(item, at: 5)
+            menu.insertItem(.separator(), at: 5)
         } else {
-            for item in observer.pasteboardItems.reversed() {
-                menu.insertItem(menuItem(for: item), at: 3)
-                menu.insertItem(.separator(), at: 3)
+            for item in manager.pasteboardItems.reversed() {
+                menu.insertItem(menuItem(for: item), at: 5)
+                menu.insertItem(.separator(), at: 5)
             }
         }
     }

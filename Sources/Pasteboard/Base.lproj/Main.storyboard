@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="19115.3"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
     </dependencies>
     <scenes>
         <!--Application-->
@@ -18,16 +19,33 @@
                                         <menuItem title="About Pasteboard" id="5kV-Vb-QxS">
                                             <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
-                                                <action selector="orderFrontStandardAboutPanel:" target="Ady-hI-5gd" id="Exp-CZ-Vem"/>
+                                                <action selector="showAboutView:" target="Voe-Tx-rLC" id="sZW-EQ-qzK"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
                                         <menuItem title="Preferences…" keyEquivalent="," id="BOF-NM-1cW">
+                                            <imageReference key="image" image="gearshape" catalog="system" symbolScale="default" renderingMode="hierarchical">
+                                                <hierarchicalColors>
+                                                    <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                    <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                </hierarchicalColors>
+                                            </imageReference>
                                             <connections>
                                                 <action selector="openPreferences:" target="Voe-Tx-rLC" id="hJ6-39-xsv"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
+                                        <menuItem title="Clear" id="bHw-1y-STM">
+                                            <imageReference key="image" image="xmark" catalog="system" symbolScale="default" renderingMode="original"/>
+                                            <string key="keyEquivalent" base64-UTF8="YES">
+CA
+</string>
+                                            <connections>
+                                                <action selector="clearHistories:" target="Voe-Tx-rLC" id="XOQ-qU-oeT"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="6PJ-Je-mPS"/>
                                         <menuItem title="Quit Pasteboard" keyEquivalent="q" id="4sb-4s-VLi">
                                             <connections>
                                                 <action selector="terminate:" target="Ady-hI-5gd" id="Te7-pn-YzF"/>
@@ -53,4 +71,8 @@
             <point key="canvasLocation" x="75" y="0.0"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="gearshape" catalog="system" width="16" height="16"/>
+        <image name="xmark" catalog="system" width="14" height="13"/>
+    </resources>
 </document>
