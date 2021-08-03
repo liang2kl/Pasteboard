@@ -10,7 +10,7 @@ import ImageIO
 
 extension NSImage {
     func downsampledImage() -> NSImage? {
-        if self.size.height < 300 { return self }
+        if self.size.width < 300 { return self }
         let size = CGSize(width: 300, height: 300 * self.size.height / self.size.width)
 
         // Create an CGImageSource that represent an image

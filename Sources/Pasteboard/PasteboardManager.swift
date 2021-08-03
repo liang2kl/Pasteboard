@@ -18,6 +18,7 @@ class PasteboardManager {
     }
     
     @Published var pasteboardItems = [PasteboardItem]()
+    @Published var pinnedItems = [PasteboardItem]()
     @Published var latestItem: PasteboardItem?
     
     private var timer: Timer?
@@ -63,6 +64,26 @@ class PasteboardManager {
         }
     }
     
+    func pinItem(_ item: PasteboardItem) {
+        DispatchQueue.global(qos: .background).async { [unowned self] in
+            if let index = pasteboardItems.firstIndex(where: { $0.time == item.time }) {
+                pasteboardItems.remove(at: index)
+            }
+            
+            pinnedItems.append(item)
+        }
+    }
+    
+    func unpinItem(_ item: PasteboardItem) {
+        DispatchQueue.global(qos: .background).async { [unowned self] in
+            if let index = pinnedItems.firstIndex(where: { $0.time == item.time }) {
+                pinnedItems.remove(at: index)
+            }
+            
+            pasteboardItems.append(item)
+        }
+    }
+    
     private func setItem(_ item: PasteboardItem) {
         latestItem = item
         pasteboardItems.append(item)
@@ -74,7 +95,7 @@ class PasteboardManager {
         let maxRecords = Defaults[.maxStoreCount]
         // Maximum 20 records
         if pasteboardItems.count > maxRecords {
-            (maxRecords..<pasteboardItems.count).forEach { pasteboardItems.remove(at: $0) }
+            (0..<pasteboardItems.count - maxRecords).forEach { pasteboardItems.remove(at: $0) }
         }
     }
     

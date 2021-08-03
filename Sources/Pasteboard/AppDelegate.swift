@@ -17,7 +17,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var manager = PasteboardManager.shared
     var cancellables = Set<AnyCancellable>()
     
-    var currentItems = PasteboardManager.shared.pasteboardItems.map { $0.time }
+    var currentItems = [Date]()
+    var currentPinnedItems = [Date]()
     
     var statusItem: NSStatusItem!
     var noContentItem: NSMenuItem?
@@ -54,6 +55,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if Defaults[.storingHistory] {
             self.manager.pasteboardItems = Defaults[.storedItems]
         }
+        self.manager.pinnedItems = Defaults[.pinnedItems]
         
         manager.$pasteboardItems
             .receive(on: DispatchQueue.global(qos: .background))
@@ -67,6 +69,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
         
+        manager.$pinnedItems
+            .receive(on: DispatchQueue.global(qos: .background))
+            .sink { items in
+                Defaults[.pinnedItems] = items
+            }
+            .store(in: &cancellables)
+
         openKey = HotKey(key: .p, modifiers: [.option, .command])
         
         openKey.keyUpHandler = {
@@ -75,9 +84,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
     }
     
-    func menuItem(for item: PasteboardItem) -> NSMenuItem {
+    func menuItem(for item: PasteboardItem, pinned: Bool) -> NSMenuItem {
         let menu = NSMenuItem()
-        menu.view = PasteboardItemView(item: item)
+        menu.view = PasteboardItemView(item: item, pinned: pinned)
+        menu.title = "\(item)"
         return menu
     }
 
@@ -94,7 +104,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate: NSMenuDelegate {    
     func menuWillOpen(_ menu: NSMenu) {
         openKey.isPaused = true
-        if manager.pasteboardItems.isEmpty {
+        if manager.pasteboardItems.isEmpty && manager.pinnedItems.isEmpty {
             while menu.items.count > 7 {
                 menu.removeItem(at: 5)
             }
@@ -113,32 +123,67 @@ extension AppDelegate: NSMenuDelegate {
                 noContentItem = nil
             }
             
-            let times = manager.pasteboardItems.map { $0.time }
-            let differences = times.difference(from: currentItems)
+            // Must update this first!
+            updateItems()
             
-            for difference in differences {
-                switch difference {
-                case .insert: break
-                case .remove(let offset, _, _):
-                    menu.removeItem(at: menu.numberOfItems - 2 * offset - 4)
-                    menu.removeItem(at: menu.numberOfItems - 2 * offset - 3)
-                }
-            }
-            
-            for difference in differences {
-                switch difference {
-                case .insert(let offset, _, _):
-                    menu.insertItem(menuItem(for: manager.pasteboardItems[offset]), at: 5)
-                    menu.insertItem(.separator(), at: 5)
-                case .remove: break
-                }
-            }
+            updatePinnedItems()
         }
         
         currentItems = manager.pasteboardItems.map { $0.time }
+        currentPinnedItems = manager.pinnedItems.map { $0.time }
     }
     
     func menuDidClose(_ menu: NSMenu) {
         openKey.isPaused = false
+    }
+    
+    private func updateItems() {
+        let times = manager.pasteboardItems.map { $0.time }
+        let differences = times.difference(from: currentItems)
+        
+        let pinnedItemCount = currentPinnedItems.count * 2
+
+        for difference in differences {
+            switch difference {
+            case .insert: break
+            case .remove(let offset, _, _):
+                menu.removeItem(at: menu.numberOfItems - 2 * offset - 4)
+                menu.removeItem(at: menu.numberOfItems - 2 * offset - 3)
+            }
+        }
+        
+        for difference in differences {
+            switch difference {
+            case .insert(let offset, _, _):
+                menu.insertItem(menuItem(for: manager.pasteboardItems[offset], pinned: false), at: 5 + pinnedItemCount)
+                menu.insertItem(.separator(), at: 5 + pinnedItemCount)
+            case .remove: break
+            }
+        }
+    }
+    
+    private func updatePinnedItems() {
+        let times = manager.pinnedItems.map { $0.time }
+        let differences = times.difference(from: currentPinnedItems)
+        var count = currentPinnedItems.count
+        
+        for difference in differences {
+            switch difference {
+            case .insert: break
+            case .remove(let offset, _, _):
+                menu.removeItem(at: 5 + (count - offset) * 2 - 1)
+                menu.removeItem(at: 5 + (count - offset) * 2 - 1)
+                count -= 1
+            }
+        }
+        
+        for difference in differences {
+            switch difference {
+            case .insert(let offset, _, _):
+                menu.insertItem(menuItem(for: manager.pinnedItems[offset], pinned: true), at: 5)
+                menu.insertItem(.separator(), at: 5)
+            case .remove: break
+            }
+        }
     }
 }

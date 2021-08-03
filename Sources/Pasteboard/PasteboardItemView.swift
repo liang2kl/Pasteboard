@@ -9,22 +9,48 @@ import AppKit
 
 class PasteboardItemView: NSView {
     
-    var timeLabel: NSTextField!
+    var pinButton: NSImageView!
     var contentView: NSView!
+    var copyIndicator: NSTextField!
+    
+    var copyCount: Int = 0
     
     var item: PasteboardItem
+    var pinned: Bool {
+        didSet {
+            let name = pinned ? "pin.fill" : "pin"
+            var image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
+
+            if #available(macOS 12.0, *) {
+                image = image.withSymbolConfiguration(.init(hierarchicalColor: .labelColor.withAlphaComponent(0.5)))!
+            }
+
+            pinButton.image = image
+        }
+    }
     
     private var isDragging = false
     
-    init(item: PasteboardItem) {
+    init(item: PasteboardItem, pinned: Bool) {
         self.item = item
+        self.pinned = pinned
         super.init(frame: .zero)
         
-        let formatter = DateFormatter()
-        formatter.dateFormat = "hh:mm"
-        timeLabel = NSTextField(labelWithString: formatter.string(from: item.time))
-        timeLabel.font = .monospacedSystemFont(ofSize: 12, weight: .medium)
-        timeLabel.textColor = .placeholderTextColor
+        let name = pinned ? "pin.fill" : "pin"
+        var image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
+
+        if #available(macOS 12.0, *) {
+            image = image.withSymbolConfiguration(.init(hierarchicalColor: .labelColor.withAlphaComponent(0.5)))!
+        }
+
+        pinButton = NSImageView(image: image)
+        copyIndicator = NSTextField(labelWithString: "Copied")
+//        copyIndicator.wantsLayer = true
+//        copyIndicator.layer?.backgroundColor = NSColor.separatorColor.cgColor
+//        copyIndicator.layer?.cornerRadius = 4
+        copyIndicator.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
+        copyIndicator.textColor = .labelColor.withAlphaComponent(0.5)
+        copyIndicator.isHidden = true
         
         switch item {
         case .string(let string, _):
@@ -44,23 +70,28 @@ class PasteboardItemView: NSView {
         
         wantsLayer = true
 
-        addSubview(timeLabel)
+        addSubview(pinButton)
         addSubview(contentView)
+        addSubview(copyIndicator)
         translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        pinButton.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
+        copyIndicator.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            timeLabel.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-            timeLabel.leadingAnchor.constraint(equalToSystemSpacingAfter: leadingAnchor, multiplier: 1),
-            contentView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 4),
-            contentView.leadingAnchor.constraint(equalTo: timeLabel.leadingAnchor),
+            contentView.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+            pinButton.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -1),
+            contentView.leadingAnchor.constraint(equalToSystemSpacingAfter: leadingAnchor, multiplier: 1),
+            pinButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
             contentView.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -1),
             widthAnchor.constraint(lessThanOrEqualToConstant: 300),
             widthAnchor.constraint(greaterThanOrEqualToConstant: 250),
-            contentView.heightAnchor.constraint(lessThanOrEqualToConstant: 200)
+            contentView.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
+            copyIndicator.trailingAnchor.constraint(equalTo: pinButton.leadingAnchor, constant: -10),
+            copyIndicator.centerYAnchor.constraint(equalTo: pinButton.centerYAnchor)
         ])
+        
     }
     
     required init?(coder: NSCoder) {
@@ -95,21 +126,34 @@ class PasteboardItemView: NSView {
 
     override func mouseEntered(with event: NSEvent) {
         layer?.backgroundColor = NSColor.separatorColor.cgColor
+        pinButton.isHidden = false
     }
     
     override func mouseExited(with event: NSEvent) {
         layer?.backgroundColor = nil
+        if !pinned {
+            pinButton.isHidden = true
+        }
     }
     
     override func mouseDown(with event: NSEvent) {
         layer?.backgroundColor = NSColor.placeholderTextColor.cgColor
+        copyItem()
         isDragging = false
     }
     
     override func mouseUp(with event: NSEvent) {
         layer?.backgroundColor = NSColor.separatorColor.cgColor
         isDragging = false
-        copyItem()
+    }
+    
+    override func rightMouseDown(with event: NSEvent) {
+        layer?.backgroundColor = NSColor.placeholderTextColor.cgColor
+    }
+    
+    override func rightMouseUp(with event: NSEvent) {
+        layer?.backgroundColor = NSColor.separatorColor.cgColor
+        setPin()
     }
     
     override func mouseDragged(with event: NSEvent) {
@@ -140,6 +184,25 @@ class PasteboardItemView: NSView {
     
     @objc func copyItem() {
         PasteboardManager.shared.copyItem(item)
+        copyIndicator.isHidden = false
+        copyCount &+= 1
+        let currentCount = copyCount
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if currentCount == self.copyCount {
+                self.copyIndicator.isHidden = true
+            }
+        }
+        
+    }
+
+    @objc func setPin() {
+        pinned.toggle()
+        if pinned {
+            PasteboardManager.shared.pinItem(item)
+        } else {
+            PasteboardManager.shared.unpinItem(item)
+        }
     }
 }
 
