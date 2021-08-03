@@ -9,6 +9,7 @@ import Cocoa
 import Combine
 import SwiftUI
 import Defaults
+import HotKey
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -16,7 +17,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var manager = PasteboardManager.shared
     var cancellables = Set<AnyCancellable>()
     
+    var currentItems = PasteboardManager.shared.pasteboardItems.map { $0.time }
+    
     var statusItem: NSStatusItem!
+    var noContentItem: NSMenuItem?
+    
+    var openKey: HotKey!
 
     @IBOutlet weak var menu: NSMenu!
     
@@ -31,6 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func clearHistories(_ sender: NSMenuItem) {
         manager.pasteboardItems.removeAll()
     }
+    
     @IBAction func showAboutView(_ sender: NSMenuItem) {
         NSApp.activate(ignoringOtherApps: true)
         NSApp.orderFrontStandardAboutPanel(nil)
@@ -45,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         manager.startObserving()
         
         if Defaults[.storingHistory] {
-            manager.pasteboardItems = Defaults[.storedItems]
+            self.manager.pasteboardItems = Defaults[.storedItems]
         }
         
         manager.$pasteboardItems
@@ -60,6 +67,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             .store(in: &cancellables)
         
+        openKey = HotKey(key: .p, modifiers: [.option, .command])
+        
+        openKey.keyUpHandler = {
+            self.statusItem.button?.performClick(nil)
+        }
+        
     }
     
     func menuItem(for item: PasteboardItem) -> NSMenuItem {
@@ -67,12 +80,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         menu.view = PasteboardItemView(item: item)
         return menu
     }
-    
-    @objc func onClick(_ sender: NSMenuItem) {
-    }
 
     func applicationWillTerminate(_ aNotification: Notification) {
-        // Insert code here to tear down your application
+        FileManager.default.removeCache()
     }
 
     func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
@@ -81,24 +91,54 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
 }
 
-extension AppDelegate: NSMenuDelegate {
-    func menuDidClose(_ menu: NSMenu) {
-        while menu.items.count > 7 {
-            menu.removeItem(at: 5)
-        }
-    }
-    
+extension AppDelegate: NSMenuDelegate {    
     func menuWillOpen(_ menu: NSMenu) {
+        openKey.isPaused = true
         if manager.pasteboardItems.isEmpty {
+            while menu.items.count > 7 {
+                menu.removeItem(at: 5)
+            }
+            
             let item = NSMenuItem()
             item.title = "No Copied Content"
             menu.insertItem(item, at: 5)
             menu.insertItem(.separator(), at: 5)
+            noContentItem = item
+
         } else {
-            for item in manager.pasteboardItems.reversed() {
-                menu.insertItem(menuItem(for: item), at: 5)
-                menu.insertItem(.separator(), at: 5)
+            if let item = noContentItem {
+                let index = menu.index(of: item)
+                menu.removeItem(at: index)
+                menu.removeItem(at: index)
+                noContentItem = nil
+            }
+            
+            let times = manager.pasteboardItems.map { $0.time }
+            let differences = times.difference(from: currentItems)
+            
+            for difference in differences {
+                switch difference {
+                case .insert: break
+                case .remove(let offset, _, _):
+                    menu.removeItem(at: menu.numberOfItems - 2 * offset - 4)
+                    menu.removeItem(at: menu.numberOfItems - 2 * offset - 3)
+                }
+            }
+            
+            for difference in differences {
+                switch difference {
+                case .insert(let offset, _, _):
+                    menu.insertItem(menuItem(for: manager.pasteboardItems[offset]), at: 5)
+                    menu.insertItem(.separator(), at: 5)
+                case .remove: break
+                }
             }
         }
+        
+        currentItems = manager.pasteboardItems.map { $0.time }
+    }
+    
+    func menuDidClose(_ menu: NSMenu) {
+        openKey.isPaused = false
     }
 }

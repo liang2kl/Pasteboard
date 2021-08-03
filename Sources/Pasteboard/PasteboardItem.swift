@@ -10,13 +10,13 @@ import Defaults
 
 enum PasteboardItem: Equatable {
     case string(string: String, time: Date)
-    case image(image: NSImage, time: Date)
+    case image(image: NSImage, data: Data, time: Date)
     
     var time: Date {
         switch self {
         case .string(_, let time):
             return time
-        case .image(_, let time):
+        case .image(_, _, let time):
             return time
         }
     }
@@ -26,9 +26,9 @@ enum PasteboardItem: Equatable {
         case .string(let string, _):
             pasteboard.declareTypes([.string], owner: nil)
             pasteboard.setString(string, forType: .string)
-        case .image(let image, _):
+        case .image(_, let data, _):
             pasteboard.declareTypes([.png], owner: nil)
-            pasteboard.setData(image.pngData(), forType: .png)
+            pasteboard.setData(data, forType: .png)
         }
     }
     
@@ -39,9 +39,9 @@ enum PasteboardItem: Equatable {
 
 extension PasteboardItem: Codable, DefaultsSerializable {
     
-    private var image: NSImage? {
-        if case .image(let image, _) = self {
-            return image
+    private var imageData: Data? {
+        if case .image(_, let data, _) = self {
+            return data
         }
         return nil
     }
@@ -59,7 +59,7 @@ extension PasteboardItem: Codable, DefaultsSerializable {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        if let image = image, let data = image.pngData() {
+        if let data = imageData {
             try container.encode(data, forKey: .image)
         }
         
@@ -75,7 +75,8 @@ extension PasteboardItem: Codable, DefaultsSerializable {
         let time = try values.decode(Date.self, forKey: .time)
         if let data = try? values.decode(Data.self, forKey: .image),
            let image = NSImage(data: data) {
-            self = .image(image: image, time: time)
+            let compressedImage = image.downsampledImage()!
+            self = .image(image: compressedImage, data: data, time: time)
         } else {
             let string = try! values.decode(String.self, forKey: .string)
             self = .string(string: string, time: time)

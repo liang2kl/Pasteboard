@@ -25,7 +25,7 @@ struct SettingsView: View {
                     .toggleStyle(.switch)
 
                 HStack {
-                    Stepper("Maximum history count", value: $maxStoreCount)
+                    Stepper("Maximum history count", value: $maxStoreCount, in: 5...20)
                     Text(String(maxStoreCount))
                         .font(.system(.body, design: .monospaced))
                 }

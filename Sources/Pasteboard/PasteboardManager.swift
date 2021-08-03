@@ -27,7 +27,9 @@ class PasteboardManager {
     
     func startObserving() {
         timer = Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true) { [unowned self] _ in
-            detectChange()
+            DispatchQueue.global(qos: .background).async {
+                detectChange()
+            }
         }
     }
     
@@ -39,14 +41,16 @@ class PasteboardManager {
             
             if let string = item.string(forType: .string) {
                 setItem(.string(string: string, time: Date()))
-            } else if let data = item.data(forType: .tiff),
-                      let image = NSImage(data: data) {
-                setItem(.image(image: image, time: Date()))
-            } else if let data = item.data(forType: .png),
-                      let image = NSImage(data: data) {
-                setItem(.image(image: image, time: Date()))
+            } else {
+                setImagePasteboardItem(item)
             }
         }
+    }
+    
+    private func setImagePasteboardItem(_ item: NSPasteboardItem) {
+        guard let data = item.data(forType: .png) ?? item.data(forType: .tiff) else { return }
+        guard let image = NSImage(data: data)?.downsampledImage() else { return }
+        setItem(.image(image: image, data: data, time: Date()))
     }
     
     func copyItem(_ item: PasteboardItem) {
@@ -61,7 +65,7 @@ class PasteboardManager {
     
     private func setItem(_ item: PasteboardItem) {
         latestItem = item
-        pasteboardItems.insert(item, at: 0)
+        pasteboardItems.append(item)
         
         removeExceededItems()
     }

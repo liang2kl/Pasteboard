@@ -34,9 +34,11 @@ class PasteboardItemView: NSView {
             textField.maximumNumberOfLines = 10
             textField.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
             contentView = textField
-        case .image(let image, _):
+        case .image(let image, _, _):
             let imageView = CustomNSImageView(mouseUp: mouseUp, mouseDown: mouseDown)
             imageView.image = image
+            imageView.imageScaling = .scaleProportionallyUpOrDown
+            imageView.heightAnchor.constraint(lessThanOrEqualTo: imageView.widthAnchor, multiplier: image.size.height / image.size.width).isActive = true
             contentView = imageView
         }
         
@@ -57,12 +59,27 @@ class PasteboardItemView: NSView {
             contentView.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -1),
             widthAnchor.constraint(lessThanOrEqualToConstant: 300),
             widthAnchor.constraint(greaterThanOrEqualToConstant: 250),
-            heightAnchor.constraint(lessThanOrEqualToConstant: 300)
+            contentView.heightAnchor.constraint(lessThanOrEqualToConstant: 200)
         ])
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func createTrackingArea() {
+        let options: NSTrackingArea.Options = [.mouseEnteredAndExited, .activeAlways]
+        let trackingArea = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil)
+        self.addTrackingArea(trackingArea)
+        
+        guard var mouseLocation = self.window?.mouseLocationOutsideOfEventStream else { return }
+        mouseLocation = self.convert(mouseLocation, to: nil)
+        
+        if self.bounds.contains(mouseLocation) {
+            mouseEntered(with: .init())
+        } else {
+            mouseExited(with: .init())
+        }
     }
     
     override func updateTrackingAreas() {
@@ -72,9 +89,8 @@ class PasteboardItemView: NSView {
             self.removeTrackingArea(trackingArea)
         }
         
-        let options: NSTrackingArea.Options = [.mouseEnteredAndExited, .activeAlways]
-        let trackingArea = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil)
-        self.addTrackingArea(trackingArea)
+        createTrackingArea()
+        super.updateTrackingAreas()
     }
 
     override func mouseEntered(with event: NSEvent) {
@@ -105,11 +121,14 @@ class PasteboardItemView: NSView {
             switch item {
             case .string:
                 pasteboardItem.setDataProvider(self, forTypes: [.string])
-                draggingItem.setDraggingFrame(self.bounds, contents: nil)
+                let image = NSImage(systemSymbolName: "text.badge.plus", accessibilityDescription: nil)!
+                    .withSymbolConfiguration(.init(pointSize: 30, weight: .bold))!
+                
+                draggingItem.setDraggingFrame(.init(origin: .zero, size: image.size), contents: image)
 
-            case .image(let image, _):
+            case .image(let image, _, _):
                 pasteboardItem.setDataProvider(self, forTypes: [.png])
-                draggingItem.setDraggingFrame(self.bounds, contents: image)
+                draggingItem.setDraggingFrame(contentView.frame, contents: image)
             }
             beginDraggingSession(with: [draggingItem], event: event, source: self)
         }
@@ -130,7 +149,7 @@ extension PasteboardItemView: NSDraggingSource, NSPasteboardItemDataProvider {
     }
     
     func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
-//        layer?.backgroundColor = NSColor.separatorColor.cgColor
+        mouseUp(with: .init())
     }
     
     func pasteboard(_ pasteboard: NSPasteboard?, item: NSPasteboardItem, provideDataForType type: NSPasteboard.PasteboardType) {
