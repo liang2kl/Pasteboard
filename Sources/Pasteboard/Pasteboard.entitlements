@@ -2,9 +2,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LSUIElement</key>
+	<key>com.apple.security.app-sandbox</key>
 	<true/>
-	<key>SUFeedURL</key>
-	<string>https://cdn.jsdelivr.net/gh/liang2kl/Pasteboard-releases@main/appcast.xml</string>
+	<key>com.apple.security.network.client</key>
+	<true/>
 </dict>
 </plist>

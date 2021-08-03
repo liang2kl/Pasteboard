@@ -10,6 +10,7 @@ import Combine
 import SwiftUI
 import Defaults
 import HotKey
+import Sparkle
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -23,6 +24,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var noContentItem: NSMenuItem?
     
     var openKey: HotKey!
+    
+    let updater = SUUpdater()
 
     @IBOutlet weak var menu: NSMenu!
     
@@ -73,6 +76,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self.statusItem.button?.performClick(nil)
         }
         
+        updater.checkForUpdatesInBackground()
     }
     
     func menuItem(for item: PasteboardItem) -> NSMenuItem {
