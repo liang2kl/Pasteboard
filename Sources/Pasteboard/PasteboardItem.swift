@@ -39,14 +39,14 @@ enum PasteboardItem: Equatable {
 
 extension PasteboardItem: Codable, DefaultsSerializable {
     
-    private var imageData: Data? {
+    var imageData: Data? {
         if case .image(_, let data, _) = self {
             return data
         }
         return nil
     }
     
-    private var string: String? {
+    var string: String? {
         if case .string(let string, _) = self {
             return string
         }

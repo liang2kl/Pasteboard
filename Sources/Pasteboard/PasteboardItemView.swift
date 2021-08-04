@@ -9,7 +9,7 @@ import AppKit
 
 class PasteboardItemView: NSView {
     
-    var pinButton: NSImageView!
+    var pinIndicator: NSImageView!
     var contentView: NSView!
     var copyIndicator: NSTextField!
     
@@ -17,16 +17,7 @@ class PasteboardItemView: NSView {
     
     var item: PasteboardItem
     var pinned: Bool {
-        didSet {
-            let name = pinned ? "pin.fill" : "pin"
-            var image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
-
-            if #available(macOS 12.0, *) {
-                image = image.withSymbolConfiguration(.init(hierarchicalColor: .labelColor.withAlphaComponent(0.5)))!
-            }
-
-            pinButton.image = image
-        }
+        didSet { updatePinImage() }
     }
     
     private var isDragging = false
@@ -35,19 +26,16 @@ class PasteboardItemView: NSView {
         self.item = item
         self.pinned = pinned
         super.init(frame: .zero)
+
+        pinIndicator = CustomNSImageView(
+            mouseUp: { _ in },
+            mouseDown: { _ in self.setPin() }
+        )
         
-        let name = pinned ? "pin.fill" : "pin"
-        var image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
-
-        if #available(macOS 12.0, *) {
-            image = image.withSymbolConfiguration(.init(hierarchicalColor: .labelColor.withAlphaComponent(0.5)))!
-        }
-
-        pinButton = NSImageView(image: image)
+        updatePinImage()
+        
         copyIndicator = NSTextField(labelWithString: "Copied")
-//        copyIndicator.wantsLayer = true
-//        copyIndicator.layer?.backgroundColor = NSColor.separatorColor.cgColor
-//        copyIndicator.layer?.cornerRadius = 4
+
         copyIndicator.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
         copyIndicator.textColor = .labelColor.withAlphaComponent(0.5)
         copyIndicator.isHidden = true
@@ -70,32 +58,44 @@ class PasteboardItemView: NSView {
         
         wantsLayer = true
 
-        addSubview(pinButton)
         addSubview(contentView)
         addSubview(copyIndicator)
+        addSubview(pinIndicator)
+
         translatesAutoresizingMaskIntoConstraints = false
-        pinButton.translatesAutoresizingMaskIntoConstraints = false
+        pinIndicator.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         copyIndicator.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor, constant: 5),
-            pinButton.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -1),
+            pinIndicator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             contentView.leadingAnchor.constraint(equalToSystemSpacingAfter: leadingAnchor, multiplier: 1),
-            pinButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            pinIndicator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
             contentView.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -1),
             widthAnchor.constraint(lessThanOrEqualToConstant: 300),
             widthAnchor.constraint(greaterThanOrEqualToConstant: 250),
             contentView.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
-            copyIndicator.trailingAnchor.constraint(equalTo: pinButton.leadingAnchor, constant: -10),
-            copyIndicator.centerYAnchor.constraint(equalTo: pinButton.centerYAnchor)
+            copyIndicator.trailingAnchor.constraint(equalTo: pinIndicator.leadingAnchor, constant: -10),
+            copyIndicator.centerYAnchor.constraint(equalTo: pinIndicator.centerYAnchor)
         ])
         
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func updatePinImage() {
+        let name = pinned ? "pin.fill" : "pin"
+        var image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
+
+        if #available(macOS 12.0, *) {
+            let color: NSColor = pinned ? .systemRed : .labelColor.withAlphaComponent(0.5)
+            image = image.withSymbolConfiguration(.init(hierarchicalColor: color))!
+        }
+        pinIndicator.image = image
     }
     
     func createTrackingArea() {
@@ -126,24 +126,26 @@ class PasteboardItemView: NSView {
 
     override func mouseEntered(with event: NSEvent) {
         layer?.backgroundColor = NSColor.separatorColor.cgColor
-        pinButton.isHidden = false
+        pinIndicator.isHidden = false
     }
     
     override func mouseExited(with event: NSEvent) {
         layer?.backgroundColor = nil
         if !pinned {
-            pinButton.isHidden = true
+            pinIndicator.isHidden = true
         }
     }
     
     override func mouseDown(with event: NSEvent) {
         layer?.backgroundColor = NSColor.placeholderTextColor.cgColor
-        copyItem()
         isDragging = false
     }
     
     override func mouseUp(with event: NSEvent) {
         layer?.backgroundColor = NSColor.separatorColor.cgColor
+        if !isDragging {
+            copyItem()
+        }
         isDragging = false
     }
     
@@ -166,7 +168,7 @@ class PasteboardItemView: NSView {
             case .string:
                 pasteboardItem.setDataProvider(self, forTypes: [.string])
                 let image = NSImage(systemSymbolName: "text.badge.plus", accessibilityDescription: nil)!
-                    .withSymbolConfiguration(.init(pointSize: 30, weight: .bold))!
+                    .withSymbolConfiguration(.init(pointSize: 20, weight: .bold))!
                 
                 draggingItem.setDraggingFrame(.init(origin: .zero, size: image.size), contents: image)
 

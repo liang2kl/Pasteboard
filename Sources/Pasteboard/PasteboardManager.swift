@@ -11,11 +11,7 @@ import Combine
 
 class PasteboardManager {
     static let shared = PasteboardManager()
-    private init() {
-        Defaults.publisher(.maxStoreCount)
-            .sink { _ in self.removeExceededItems() }
-            .store(in: &cancellables)
-    }
+    private init() {}
     
     @Published var pasteboardItems = [PasteboardItem]()
     @Published var pinnedItems = [PasteboardItem]()
@@ -41,25 +37,36 @@ class PasteboardManager {
             guard let item = pasteboard.pasteboardItems?.first else { return }
             
             if let string = item.string(forType: .string) {
-                setItem(.string(string: string, time: Date()))
+                setStringPasteboardItem(with: string)
             } else {
                 setImagePasteboardItem(item)
             }
         }
     }
     
+    private func setStringPasteboardItem(with string: String) {
+        if pinnedItems.contains(where: { $0.string == string }) { return }
+        if let index = pasteboardItems.firstIndex(where: { $0.string == string }) {
+            pasteboardItems.remove(at: index)
+        }
+        
+        setItem(.string(string: string, time: Date()))
+    }
+    
     private func setImagePasteboardItem(_ item: NSPasteboardItem) {
         guard let data = item.data(forType: .png) ?? item.data(forType: .tiff) else { return }
+        
+        if pinnedItems.contains(where: { $0.imageData == data }) { return }
+        if let index = pasteboardItems.firstIndex(where: { $0.imageData == data }) {
+            pasteboardItems.remove(at: index)
+        }
+        
         guard let image = NSImage(data: data)?.downsampledImage() else { return }
         setItem(.image(image: image, data: data, time: Date()))
     }
     
     func copyItem(_ item: PasteboardItem) {
         DispatchQueue.global(qos: .background).async { [unowned self] in
-            if let index = pasteboardItems.firstIndex(where: { $0.time == item.time }) {
-                pasteboardItems.remove(at: index)
-            }
-            
             item.copyToPasteboard(self.pasteboard)
         }
     }
@@ -93,9 +100,11 @@ class PasteboardManager {
     
     private func removeExceededItems() {
         let maxRecords = Defaults[.maxStoreCount]
-        // Maximum 20 records
+
         if pasteboardItems.count > maxRecords {
-            (0..<pasteboardItems.count - maxRecords).forEach { pasteboardItems.remove(at: $0) }
+            (0..<pasteboardItems.count - maxRecords).forEach {
+                pasteboardItems.remove(at: $0)
+            }
         }
     }
     
