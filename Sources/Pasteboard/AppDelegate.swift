@@ -95,6 +95,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             showIntro()
             Defaults[.helpShown] = true
         }
+        
     }
     
     /// Returns a configured menu item for a pasteboard item.

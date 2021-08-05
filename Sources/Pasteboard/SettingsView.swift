@@ -18,13 +18,13 @@ struct SettingsView: View {
                 LaunchAtLogin.Toggle() {
                     Text("SETTINGSVIEW_LAUNCH_AT_LOGIN_TOGGLE")
                 }
-                .toggleStyle(.switch)
+                .toggleStyle(SwitchToggleStyle())
             }
             .tabItem { Text("SETTINGSVIEW_GENERAL_TAB") }
 
             Form {
                 Toggle("SETTINGSVIEW_SAVE_HISTORY_TOGGLE", isOn: $storingHistory)
-                    .toggleStyle(.switch)
+                    .toggleStyle(SwitchToggleStyle())
 
                 HStack {
                     Stepper("SETTINGSVIEW_MAX_HISTORY_COUNT_STEPPER", value: $maxStoreCount, in: 5...20)

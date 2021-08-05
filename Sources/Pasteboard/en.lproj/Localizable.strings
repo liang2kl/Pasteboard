@@ -1,4 +1,16 @@
 /* No comment provided by engineer. */
+"INTROVIEW_CLICK_COPY" = "Click to copy";
+
+/* No comment provided by engineer. */
+"INTROVIEW_DRAG" = "Drag to drop elsewhere";
+
+/* No comment provided by engineer. */
+"INTROVIEW_RECORDED" = "Pasteboard changes will be recorded";
+
+/* No comment provided by engineer. */
+"INTROVIEW_RIGHT_CLICK_PIN" = "Right click to pin";
+
+/* No comment provided by engineer. */
 "MENU_ITEM_TOOLTIP" = "Left click to copy\nRight click to pin\nDrag to drop elsewhere";
 
 /* No comment provided by engineer. */

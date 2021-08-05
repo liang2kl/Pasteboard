@@ -1,8 +1,26 @@
 /* No comment provided by engineer. */
+"INTROVIEW_CLICK_COPY" = "单击复制";
+
+/* No comment provided by engineer. */
+"INTROVIEW_DRAG" = "可拖动到别处";
+
+/* No comment provided by engineer. */
+"INTROVIEW_RECORDED" = "应用将实时记录剪切板";
+
+/* No comment provided by engineer. */
+"INTROVIEW_RIGHT_CLICK_PIN" = "右键单击固定";
+
+/* No comment provided by engineer. */
 "MENU_ITEM_TOOLTIP" = "单击复制\n右键单击固定\n可拖动到别处";
 
 /* No comment provided by engineer. */
 "MENU_NO_CONTENT_ITEM" = "无内容";
+
+/* No comment provided by engineer. */
+"OK" = "好";
+
+/* No comment provided by engineer. */
+"Pasteboard" = "Pasteboard";
 
 /* No comment provided by engineer. */
 "PASTEBOARD_ITEM_VIEW_COPIED_LABEL" = "已复制";

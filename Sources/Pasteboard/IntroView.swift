@@ -17,13 +17,13 @@ struct IntroView: View {
                 .font(.title)
             
             Form {
-                Label("Pasteboard changes will be recorded", systemImage: "arrow.triangle.2.circlepath.doc.on.clipboard")
+                Label("INTROVIEW_RECORDED", systemImage: "arrow.triangle.2.circlepath.doc.on.clipboard")
                     .padding(.bottom, 8)
-                Label("Click to copy", systemImage: "cursorarrow.rays")
+                Label("INTROVIEW_CLICK_COPY", systemImage: "cursorarrow.rays")
                     .padding(.bottom, 8)
-                Label("Right click to pin", systemImage: "cursorarrow.click")
+                Label("INTROVIEW_RIGHT_CLICK_PIN", systemImage: "cursorarrow.click")
                     .padding(.bottom, 8)
-                Label("Drag to drop elsewhere", systemImage: "cursorarrow.and.square.on.square.dashed")
+                Label("INTROVIEW_DRAG", systemImage: "cursorarrow.and.square.on.square.dashed")
             }
             .font(.title3)
             
