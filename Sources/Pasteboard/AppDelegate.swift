@@ -12,7 +12,7 @@ import Defaults
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
-
+    
     var manager = PasteboardManager.shared
     var cancellables = Set<AnyCancellable>()
     
