@@ -9,7 +9,6 @@ import Cocoa
 import Combine
 import SwiftUI
 import Defaults
-import HotKey
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -26,8 +25,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var pasteboardMenuItems = [(item: NSMenuItem, separator: NSMenuItem)]()
     var pinnedMenuItems = [(item: NSMenuItem, separator: NSMenuItem)]()
     
-    var openKey: HotKey!
     var preferenceWindow: NSWindow?
+    var introWindow: NSWindow?
 
     /// Connected to the status bar menu in the storyboard.
     @IBOutlet weak var menu: NSMenu!
@@ -37,7 +36,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if preferenceWindow == nil {
             let vc = NSHostingController(rootView: SettingsView())
             preferenceWindow = NSWindow(contentViewController: vc)
-            preferenceWindow?.title = "Preferences"
+            preferenceWindow?.titlebarSeparatorStyle = .none
+            preferenceWindow?.title = NSLocalizedString("PREFERENCE_WINDOW_TITLE", comment: "")
         }
         NSApp.activate(ignoringOtherApps: true)
         preferenceWindow?.makeKeyAndOrderFront(nil)
@@ -90,20 +90,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 Defaults[.pinnedItems] = items
             }
             .store(in: &cancellables)
-
-        // Setup global hotkey to enable invoking the menu by `option` + `command` + `P`
-        openKey = HotKey(key: .p, modifiers: [.option, .command])
         
-        openKey.keyUpHandler = {
-            self.statusItem.button?.performClick(nil)
+        if !Defaults[.helpShown] {
+            showIntro()
+            Defaults[.helpShown] = true
         }
-        
     }
     
     /// Returns a configured menu item for a pasteboard item.
     func menuItem(for item: PasteboardItem, pinned: Bool) -> NSMenuItem {
         let menu = NSMenuItem()
         menu.view = PasteboardItemView(item: item, pinned: pinned)
+        menu.toolTip = NSLocalizedString("MENU_ITEM_TOOLTIP", comment: "")
         return menu
     }
 
@@ -115,12 +113,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
+    func showIntro() {
+        let vc = NSHostingController(rootView: IntroView())
+        introWindow = NSWindow(contentViewController: vc)
+        introWindow!.title = ""
+        introWindow!.titlebarSeparatorStyle = .none
+        NSApp.activate(ignoringOtherApps: true)
+        introWindow!.makeKeyAndOrderFront(nil)
+    }
+    
 }
 
 extension AppDelegate: NSMenuDelegate {    
     func menuWillOpen(_ menu: NSMenu) {
-        // Pause hotkey observation
-        openKey.isPaused = true
         if manager.pasteboardItems.isEmpty && manager.pinnedItems.isEmpty {
             // Insert a label where there are no items
             while menu.items.count > 7 {
@@ -128,7 +133,7 @@ extension AppDelegate: NSMenuDelegate {
             }
             
             let item = NSMenuItem()
-            item.title = "No Copied Content"
+            item.title = NSLocalizedString("MENU_NO_CONTENT_ITEM", comment: "")
             menu.insertItem(item, at: 5)
             menu.insertItem(.separator(), at: 5)
             noContentItem = item
@@ -151,10 +156,6 @@ extension AppDelegate: NSMenuDelegate {
         // have already displayed.
         currentItems = manager.pasteboardItems.map { $0.time }
         currentPinnedItems = manager.pinnedItems.map { $0.time }
-    }
-    
-    func menuDidClose(_ menu: NSMenu) {
-        openKey.isPaused = false
     }
     
     private func updateItems() {

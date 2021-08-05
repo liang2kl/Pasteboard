@@ -1,0 +1,21 @@
+/* Class = "NSMenuItem"; title = "Pasteboard"; ObjectID = "1Xt-HY-uBw"; */
+"1Xt-HY-uBw.title" = "Pasteboard";
+
+/* Class = "NSMenuItem"; title = "Quit Pasteboard"; ObjectID = "4sb-4s-VLi"; */
+"4sb-4s-VLi.title" = "退出 Pasteboard";
+
+/* Class = "NSMenuItem"; title = "About Pasteboard"; ObjectID = "5kV-Vb-QxS"; */
+"5kV-Vb-QxS.title" = "关于 Pasteboard";
+
+/* Class = "NSMenu"; title = "Main Menu"; ObjectID = "AYu-sK-qS6"; */
+"AYu-sK-qS6.title" = "Main Menu";
+
+/* Class = "NSMenuItem"; title = "Clear"; ObjectID = "bHw-1y-STM"; */
+"bHw-1y-STM.title" = "清除";
+
+/* Class = "NSMenuItem"; title = "Preferences…"; ObjectID = "BOF-NM-1cW"; */
+"BOF-NM-1cW.title" = "偏好设置…";
+
+/* Class = "NSMenu"; title = "Pasteboard"; ObjectID = "uQy-DD-JDr"; */
+"uQy-DD-JDr.title" = "Pasteboard";
+

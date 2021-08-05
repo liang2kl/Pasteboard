@@ -1,0 +1,27 @@
+/* No comment provided by engineer. */
+"MENU_ITEM_TOOLTIP" = "单击复制\n右键单击固定\n可拖动到别处";
+
+/* No comment provided by engineer. */
+"MENU_NO_CONTENT_ITEM" = "无内容";
+
+/* No comment provided by engineer. */
+"PASTEBOARD_ITEM_VIEW_COPIED_LABEL" = "已复制";
+
+/* No comment provided by engineer. */
+"PREFERENCE_WINDOW_TITLE" = "偏好设置";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_GENERAL_TAB" = "通用";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_HISTORY_TAB" = "剪贴板记录";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_LAUNCH_AT_LOGIN_TOGGLE" = "登录时启动";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_MAX_HISTORY_COUNT_STEPPER" = "最大记录数量";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_SAVE_HISTORY_TOGGLE" = "保存记录";
+

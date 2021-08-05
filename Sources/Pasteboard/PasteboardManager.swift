@@ -15,7 +15,6 @@ class PasteboardManager {
     
     @Published var pasteboardItems = [PasteboardItem]()
     @Published var pinnedItems = [PasteboardItem]()
-    @Published var latestItem: PasteboardItem?
     
     private var timer: Timer?
     private let pasteboard = NSPasteboard.general
@@ -36,6 +35,10 @@ class PasteboardManager {
             
             guard let item = pasteboard.pasteboardItems?.first else { return }
             
+            if let string = item.string(forType: .fileURL) {
+                print(string)
+            }
+            
             if let string = item.string(forType: .string) {
                 setStringPasteboardItem(with: string)
             } else {
@@ -47,7 +50,10 @@ class PasteboardManager {
     private func setStringPasteboardItem(with string: String) {
         if pinnedItems.contains(where: { $0.string == string }) { return }
         if let index = pasteboardItems.firstIndex(where: { $0.string == string }) {
+            let item = pasteboardItems[index]
             pasteboardItems.remove(at: index)
+            setItem(item)
+            return
         }
         
         setItem(.string(string: string, time: Date()))
@@ -58,7 +64,10 @@ class PasteboardManager {
         
         if pinnedItems.contains(where: { $0.imageData == data }) { return }
         if let index = pasteboardItems.firstIndex(where: { $0.imageData == data }) {
+            let item = pasteboardItems[index]
             pasteboardItems.remove(at: index)
+            setItem(item)
+            return
         }
         
         guard let image = NSImage(data: data)?.downsampledImage() else { return }
@@ -92,9 +101,7 @@ class PasteboardManager {
     }
     
     private func setItem(_ item: PasteboardItem) {
-        latestItem = item
         pasteboardItems.append(item)
-        
         removeExceededItems()
     }
     

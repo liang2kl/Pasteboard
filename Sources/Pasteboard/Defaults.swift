@@ -13,4 +13,5 @@ extension Defaults.Keys {
     static let pinnedItems = Defaults.Key<[PasteboardItem]>("pinned.pasteboard.items", default: [])
     static let maxStoreCount = Defaults.Key<Int>("max.count", default: 10)
     static let storingHistory = Defaults.Key<Bool>("storing.history", default: true)
+    static let helpShown = Defaults.Key<Bool>("help.shown", default: false)
 }

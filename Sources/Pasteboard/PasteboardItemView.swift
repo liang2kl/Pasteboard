@@ -28,13 +28,13 @@ class PasteboardItemView: NSView {
         super.init(frame: .zero)
 
         pinIndicator = CustomNSImageView(
-            mouseUp: { _ in },
-            mouseDown: { _ in self.setPin() }
+            mouseUp: { _ in self.setPin() },
+            mouseDown: { _ in }
         )
         
         updatePinImage()
         
-        copyIndicator = NSTextField(labelWithString: "Copied")
+        copyIndicator = NSTextField(labelWithString: NSLocalizedString("PASTEBOARD_ITEM_VIEW_COPIED_LABEL", comment: ""))
 
         copyIndicator.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
         copyIndicator.textColor = .labelColor.withAlphaComponent(0.5)
@@ -89,12 +89,9 @@ class PasteboardItemView: NSView {
     
     private func updatePinImage() {
         let name = pinned ? "pin.fill" : "pin"
-        var image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
-
-        if #available(macOS 12.0, *) {
-            let color: NSColor = pinned ? .systemRed : .labelColor.withAlphaComponent(0.5)
-            image = image.withSymbolConfiguration(.init(hierarchicalColor: color))!
-        }
+        let image = NSImage(systemSymbolName: name, accessibilityDescription: "")!
+        let color: NSColor = pinned ? .systemRed : .labelColor.withAlphaComponent(0.5)
+        pinIndicator.contentTintColor = color
         pinIndicator.image = image
     }
     
@@ -149,12 +146,7 @@ class PasteboardItemView: NSView {
         isDragging = false
     }
     
-    override func rightMouseDown(with event: NSEvent) {
-        layer?.backgroundColor = NSColor.placeholderTextColor.cgColor
-    }
-    
     override func rightMouseUp(with event: NSEvent) {
-        layer?.backgroundColor = NSColor.separatorColor.cgColor
         setPin()
     }
     

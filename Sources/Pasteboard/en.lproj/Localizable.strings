@@ -1,0 +1,27 @@
+/* No comment provided by engineer. */
+"MENU_ITEM_TOOLTIP" = "Left click to copy\nRight click to pin\nDrag to drop elsewhere";
+
+/* No comment provided by engineer. */
+"MENU_NO_CONTENT_ITEM" = "No Copied Content";
+
+/* No comment provided by engineer. */
+"PASTEBOARD_ITEM_VIEW_COPIED_LABEL" = "Copied";
+
+/* No comment provided by engineer. */
+"PREFERENCE_WINDOW_TITLE" = "Preferences";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_GENERAL_TAB" = "General";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_HISTORY_TAB" = "History";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_LAUNCH_AT_LOGIN_TOGGLE" = "Launch at Login";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_MAX_HISTORY_COUNT_STEPPER" = "Maximum history count";
+
+/* No comment provided by engineer. */
+"SETTINGSVIEW_SAVE_HISTORY_TOGGLE" = "Save History";
+
