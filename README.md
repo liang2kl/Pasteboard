@@ -22,7 +22,3 @@ To make use of the contents, you can:
 
 **Click the pin button (or right click on the whole menu item) to pin / unpin an item.** 
 Pinned items will stay at the top, will not be cleared, and are persistent across app sessions.
-
-### Shortcuts
-
-Press `⌥⌘+P` to open the menu.
