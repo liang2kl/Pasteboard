@@ -151,7 +151,7 @@ class PasteboardItemView: NSView {
     }
     
     override func mouseDragged(with event: NSEvent) {
-        if !isDragging {
+        if !isDragging && pow(event.deltaX, 2) + pow(event.deltaY, 2) > 3 {
             isDragging = true
             let pasteboardItem = NSPasteboardItem()
             let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
