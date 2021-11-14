@@ -101,7 +101,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     /// Returns a configured menu item for a pasteboard item.
     func menuItem(for item: PasteboardItem, pinned: Bool) -> NSMenuItem {
         let menu = NSMenuItem()
-        menu.view = PasteboardItemView(item: item, pinned: pinned)
+        menu.view = PasteboardItemViewWrapper(item: item, pinned: pinned)
         menu.toolTip = NSLocalizedString("MENU_ITEM_TOOLTIP", comment: "")
         return menu
     }

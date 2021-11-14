@@ -7,6 +7,32 @@
 
 import AppKit
 
+class PasteboardItemViewWrapper: NSView {
+    var pasteboardItemView: PasteboardItemView
+    
+    init(item: PasteboardItem, pinned: Bool) {
+        pasteboardItemView = .init(item: item, pinned: pinned)
+        
+        super.init(frame: .zero)
+
+        translatesAutoresizingMaskIntoConstraints = false
+        
+        addSubview(pasteboardItemView)
+        NSLayoutConstraint.activate([
+            widthAnchor.constraint(equalTo: pasteboardItemView.widthAnchor, constant: 10),
+            leadingAnchor.constraint(equalTo: pasteboardItemView.leadingAnchor, constant: -5),
+            topAnchor.constraint(equalTo: pasteboardItemView.topAnchor),
+            bottomAnchor.constraint(equalTo: pasteboardItemView.bottomAnchor)
+        ])
+        
+
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
 class PasteboardItemView: NSView {
     
     var pinIndicator: NSImageView!
@@ -70,17 +96,19 @@ class PasteboardItemView: NSView {
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: topAnchor, constant: 5),
             pinIndicator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
-            contentView.leadingAnchor.constraint(equalToSystemSpacingAfter: leadingAnchor, multiplier: 1),
+            contentView.leadingAnchor.constraint(equalToSystemSpacingAfter: leadingAnchor, multiplier: 0.5),
             pinIndicator.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             contentView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -5),
-            contentView.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -1),
+            contentView.trailingAnchor.constraint(equalToSystemSpacingAfter: trailingAnchor, multiplier: -0.5),
             widthAnchor.constraint(lessThanOrEqualToConstant: 300),
             widthAnchor.constraint(greaterThanOrEqualToConstant: 250),
             contentView.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
             copyIndicator.trailingAnchor.constraint(equalTo: pinIndicator.leadingAnchor, constant: -10),
             copyIndicator.centerYAnchor.constraint(equalTo: pinIndicator.centerYAnchor)
         ])
-        
+
+        layer?.cornerRadius = 5
+        layer?.cornerCurve = .continuous
     }
     
     required init?(coder: NSCoder) {
