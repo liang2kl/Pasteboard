@@ -5,6 +5,12 @@ jpeg files and png files.
 
 <img align="center" width='300px' src='Documentation/Screenshots/main.png'/>
 
+## Download
+
+<a href='https://apps.apple.com/cn/app/pastyboard/id1585942797'>
+    <img align="center" height=40px src='Documentation/Assets/app_store_mac.svg'/>
+</a>
+
 ## Usage
 
 The app will record every change in system's pasteboard since the launch of the app. 
