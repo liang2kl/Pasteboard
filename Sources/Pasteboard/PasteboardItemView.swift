@@ -62,10 +62,14 @@ class PasteboardItemView: NSView {
         
         copyIndicator = NSTextField(labelWithString: NSLocalizedString("PASTEBOARD_ITEM_VIEW_COPIED_LABEL", comment: ""))
 
-        copyIndicator.font = .monospacedSystemFont(ofSize: 13, weight: .medium)
-        copyIndicator.textColor = .labelColor.withAlphaComponent(0.5)
+        copyIndicator.font = .systemFont(ofSize: 13, weight: .medium)
+        copyIndicator.textColor = .textBackgroundColor
         copyIndicator.isHidden = true
-        
+        copyIndicator.wantsLayer = true
+        copyIndicator.layer?.cornerCurve = .continuous
+        copyIndicator.layer?.cornerRadius = 3
+        copyIndicator.layer?.backgroundColor = NSColor.labelColor.cgColor
+
         switch item {
         case .string(let string, _):
             let textField = NSTextField(wrappingLabelWithString: string)
@@ -103,8 +107,8 @@ class PasteboardItemView: NSView {
             widthAnchor.constraint(lessThanOrEqualToConstant: 300),
             widthAnchor.constraint(greaterThanOrEqualToConstant: 250),
             contentView.heightAnchor.constraint(lessThanOrEqualToConstant: 200),
-            copyIndicator.trailingAnchor.constraint(equalTo: pinIndicator.leadingAnchor, constant: -10),
-            copyIndicator.centerYAnchor.constraint(equalTo: pinIndicator.centerYAnchor)
+            copyIndicator.topAnchor.constraint(equalTo: topAnchor, constant: 5),
+            copyIndicator.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -5)
         ])
 
         layer?.cornerRadius = 5
